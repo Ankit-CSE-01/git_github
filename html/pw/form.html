@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>HTML Forms</h1>
+    <form>
+        <input type="text">
+        <datalist id="cars">
+            <option value="HTML">
+            <option value="CSS">
+            <option value="JS">
+            <option value="REACT">
+        </datalist>
+        <input list="skills" placeholder="Choose">
+        <select name="" id="">
+            <option value="">HTML</option>
+            <option value="">CSS</option>
+            <option value="">JS</option>
+            <option value="">REACT</option>
+        </select>
+        <div>
+            <label for="">Select Your Skills</label>
+            <input type="checkbox" value="html">HTML
+            <input type="checkbox" value="css">CSS
+            <input type="checkbox" value="js">JS
+            <input type="checkbox" value="react">React     
+        </div>
+        <textarea name="" id="" cols="30" rows="10"></textarea>
+        <fieldset>
+            <legend>Education</legend>
+            <label for="">Enter University Name: </label>
+            <input type="text" placeholder="Enter University Name"><br>
+            <label for="">Enter Marks: </label>
+            <input type="number" placeholder="Enter Your Marks"><br>
+            <label for="">Enter Degree name:</label>
+            <input type="text" placeholder="Enter Degree Name"><br>
+            <label for="">Enter Year of Passing:</label>
+            <input type="text" placeholder="Enter Passing Year"><br>
+        </fieldset>
+       <div>
+            <label for="uname">Username : </label>
+            <input id="uname" type="text" placeholder="Enter Username" required>
+        </div>
+
+        <div>
+            <label for="age">Age : </label>
+            <input id="age" type="number" placeholder="Enter Age" minlength="1" maxlength="3" required>
+        </div>
+        <div>
+            <label for="mail">Email : </label>
+            <input id="mail" type="email" placeholder="Enter email" minlength="4" maxlength="100" required>
+        </div>
+        <div>
+            <label for="password">Email : </label>
+            <input id="password" type="password" placeholder="Enter Password" minlength="4" maxlength="10" required>
+        </div>
+        <label for="gender">Gender: </label>
+            <input type="radio" name="gender">Male
+            <input type="radio" name="gender">female
+            <input type="radio" name="gender">Other
+
+        <br>
+        <input type="date" name="" id=""><br>
+        <input type="file" name="" id="">
+        <br>
+        <button>Signup</button>
+    </form>
+</body>
+</html>

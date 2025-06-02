@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediRapid - AI-Powered Emergency Medical Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #4f46e5;
+            --secondary: #6366f1;
+            --accent: #8b5cf6;
+            --emergency: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --bot-bubble: #e3f2fd;
+            --user-bubble: #4f46e5;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            scroll-behavior: smooth;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        }
+        
+        .hero-pattern {
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .glow {
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.5);
+        }
+        
+        .hospital-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hospital-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .hospital-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .hospital-card:hover::before {
+            opacity: 1;
+        }
+        
+        .emergency-card {
+            border-left: 4px solid var(--emergency);
+            animation: emergency-pulse 1.5s infinite;
+        }
+        
+        @keyframes emergency-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: modalSlideIn 0.4s ease forwards;
+        }
+        
+        @keyframes modalSlideIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background-color: white;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        /* Enhanced Chatbot Styles */
+        .chat-container {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .chat-header i {
+            font-size: 1.5rem;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background-color: #f9fafb;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .bot-message {
+            align-self: flex-start;
+            background-color: var(--bot-bubble);
+            color: var(--dark);
+            border-top-left-radius: 5px;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--user-bubble);
+            color: white;
+            border-top-right-radius: 5px;
+        }
+        
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0.75rem 1rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .quick-reply {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quick-reply:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .input-area {
+            display: flex;
+            padding: 1rem;
+            background-color: white;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+        
+        .input-area input:focus {
+            border-color: var(--primary);
+        }
+        
+        .input-area button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            margin-left: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .input-area button:hover {
+            background-color: #3a7bc8;
+        }
+        
+        .input-area button i {
+            font-size: 1.2rem;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-self: flex-start;
+            padding: 12px 16px;
+            background-color: var(--bot-bubble);
+            border-radius: 18px;
+            margin-bottom: 16px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #666;
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+        
+        .symptom-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .symptom-option {
+            background-color: white;
+            border: 1px solid var(--primary);
+            border-radius: 15px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .symptom-option:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .disclaimer {
+            background-color: #fff8e1;
+            color: #e65100;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .chatbot-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--user-bubble);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+        
+        .message-container {
+            display: flex;
+            max-width: 90%;
+            align-items: flex-start;
+        }
+        
+        .bot-message-container {
+            align-self: flex-start;
+        }
+        
+        .user-message-container {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            color: #6b7280;
+            margin-top: 4px;
+            text-align: right;
+        }
+        .chat-container {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            background: rgba(44, 62, 80, 0.9);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: rgba(52, 73, 94, 0.7);
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 1rem;
+            background: rgba(44, 62, 80, 0.8);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 25px;
+            outline: none;
+            font-size: 0.95rem;
+            background: rgba(74, 85, 104, 0.5);
+            color: white;
+        }
+
+        .input-area input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .input-area input:focus {
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.5);
+        }
+
+        .input-area button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            margin-left: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .input-area button:hover {
+            background: #c0392b;
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-self: flex-start;
+            padding: 12px 16px;
+            background: rgba(46, 204, 113, 0.5);
+            border-radius: 18px;
+            margin-bottom: 16px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .medical-icon {
+            font-size: 1.5rem;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <!-- Enhanced Navigation -->
+    <nav class="fixed w-full z-50 bg-white shadow-lg transition-all duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="relative">
+                    <img src="https://via.placeholder.com/50" class="h-10 w-10 rounded-full glow" alt="Logo">
+                    <span class="absolute top-0 right-0 h-3 w-3 rounded-full bg-green-500 animate-pulse"></span>
+                </div>
+                <h1 class="text-2xl font-bold gradient-text">MediRapid</h1>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#emergency" class="text-gray-700 hover:text-indigo-600 transition duration-300 flex items-center">
+                    <i class="fas fa-ambulance mr-2"></i>Emergency
+                </a>
+                <a href="#services" class="text-gray-700 hover:text-indigo-600 transition duration-300 flex items-center">
+                    <i class="fas fa-hospital mr-2"></i>Services
+                </a>
+                <a href="#ai-assistant" class="text-gray-700 hover:text-indigo-600 transition duration-300 flex items-center">
+                    <i class="fas fa-robot mr-2"></i>AI Assistant
+                </a>
+                <a href="#contact" class="text-gray-700 hover:text-indigo-600 transition duration-300 flex items-center">
+                    <i class="fas fa-phone mr-2"></i>Contact
+                </a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="emergencyTrigger" class="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition duration-300 flex items-center pulse-animation">
+                    <i class="fas fa-bell mr-2"></i>Emergency
+                </button>
+                <button class="md:hidden text-gray-700 focus:outline-none" id="mobileMenuButton">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white shadow-lg absolute w-full left-0 px-4 pb-4">
+            <a href="#emergency" class="block py-2 text-gray-700 hover:text-indigo-600">
+                <i class="fas fa-ambulance mr-2"></i>Emergency
+            </a>
+            <a href="#services" class="block py-2 text-gray-700 hover:text-indigo-600">
+                <i class="fas fa-hospital mr-2"></i>Services
+            </a>
+            <a href="#ai-assistant" class="block py-2 text-gray-700 hover:text-indigo-600">
+                <i class="fas fa-robot mr-2"></i>AI Assistant
+            </a>
+            <a href="#contact" class="block py-2 text-gray-700 hover:text-indigo-600">
+                <i class="fas fa-phone mr-2"></i>Contact
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section with AI Typing Effect -->
+    <header class="hero-pattern text-white pt-32 pb-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-50"></div>
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+                    <span id="typed" class="gradient-text"></span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-10 opacity-90">
+                    AI-powered emergency response system connecting you to the nearest medical facilities
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button id="findHospitalsBtn" class="bg-white text-indigo-600 px-8 py-4 rounded-full shadow-lg transition duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center">
+                        <i class="fas fa-map-marker-alt mr-3"></i>Find Hospitals
+                    </button>
+                    <button onclick="window.location.href='ai-diagnostic.html'" class="bg-indigo-600 text-white px-8 py-4 rounded-full shadow-lg transition duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center">
+                        <i class="fas fa-robot mr-3"></i>AI Emergency Guide
+                    </button>
+                    
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- Floating medical icons -->
+        <div class="absolute top-20 left-10 text-indigo-300 text-4xl floating" style="animation-delay: 0.2s;">
+            <i class="fas fa-heartbeat"></i>
+        </div>
+        <div class="absolute bottom-20 right-10 text-indigo-300 text-4xl floating" style="animation-delay: 0.4s;">
+            <i class="fas fa-ambulance"></i>
+        </div>
+        <div class="absolute top-1/3 right-1/4 text-indigo-300 text-4xl floating" style="animation-delay: 0.6s;">
+            <i class="fas fa-hospital"></i>
+        </div>
+    </header>
+
+   
+    <!-- Services Section with Hover Effects -->
+    <section id="services" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 gradient-text">
+                    <i class="fas fa-medkit mr-4"></i>Our Services
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Comprehensive emergency medical services powered by AI technology
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="hospital-card bg-gray-50 p-8 rounded-xl shadow-md">
+                    <div class="text-indigo-600 text-5xl mb-6 flex justify-center">
+                        <i class="fas fa-ambulance floating" style="animation-delay: 0.2s;"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4 text-center">Emergency Response</h3>
+                    <p class="text-gray-600 mb-6 text-center">
+                        Immediate dispatch of medical teams with real-time tracking and AI-assisted routing
+                    </p>
+                    <div class="text-center">
+                        <a href="#emergency" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
+                            Learn More <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="hospital-card bg-gray-50 p-8 rounded-xl shadow-md">
+                    <div class="text-purple-600 text-5xl mb-6 flex justify-center">
+                        <i class="fas fa-robot floating" style="animation-delay: 0.4s;"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4 text-center">AI Diagnostics</h3>
+                    <p class="text-gray-600 mb-6 text-center">
+                        Advanced symptom analysis and emergency guidance powered by machine learning
+                    </p>
+                    <button onclick="window.location.href='ai-diagnostic.html'" class="bg-indigo-600 text-white px-8 py-4 rounded-full shadow-lg transition duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center">
+                        <i class="fas fa-robot mr-3"></i>AI Diagnostics
+                    </button>
+                    <a href="ai-diagnostic.html" class="inline-flex items-center text-purple-600 hover:text-purple-800 font-medium">
+                       
+                    </a>
+                </div>
+                
+                <div class="emergency-card bg-gray-50 p-8 rounded-xl shadow-md">
+                    <div class="text-red-600 text-5xl mb-6 flex justify-center">
+                        <i class="fas fa-first-aid floating" style="animation-delay: 0.6s;"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4 text-center">First Aid Guide</h3>
+                    <p class="text-gray-600 mb-6 text-center">
+                        Interactive step-by-step instructions for emergency medical situations
+                    </p>
+                    <div class="text-center">
+                        <a href="firstaid.html" class="inline-flex items-center text-red-600 hover:text-red-800 font-medium">
+                            Access Guide <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Section -->
+    <section id="emergency" class="py-16 bg-gradient-to-b from-white to-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 gradient-text">
+                    <i class="fas fa-exclamation-triangle mr-4"></i>Emergency Services
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Immediate assistance when you need it most
+                </p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-1/2 bg-red-600 text-white p-8 flex flex-col justify-center">
+                        <div class="text-center mb-6">
+                            <i class="fas fa-bell text-5xl mb-4"></i>
+                            <h3 class="text-2xl font-bold mb-2">Emergency Alert</h3>
+                            <p>Trigger an immediate emergency response</p>
+                        </div>
+                        <button id="emergencyTrigger2" class="bg-white text-red-600 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition pulse-animation">
+                            <i class="fas fa-ambulance mr-2"></i> EMERGENCY CALL
+                        </button>
+                    </div>
+                    <div class="md:w-1/2 p-8">
+                        <h3 class="text-xl font-semibold mb-4">Emergency Contacts</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-center">
+                                <div class="bg-blue-100 text-blue-600 rounded-full p-3 mr-4">
+                                    <i class="fas fa-ambulance"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">Ambulance</h4>
+                                    <p class="text-gray-600">911 (US) or 112 (EU)</p>
+                                </div>
+                            </li>
+                            <li class="flex items-center">
+                                <div class="bg-green-100 text-green-600 rounded-full p-3 mr-4">
+                                    <i class="fas fa-hospital"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">Poison Control</h4>
+                                    <p class="text-gray-600">1-800-222-1222 (US)</p>
+                                </div>
+                            </li>
+                            <li class="flex items-center">
+                                <div class="bg-purple-100 text-purple-600 rounded-full p-3 mr-4">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium">Mental Health</h4>
+                                    <p class="text-gray-600">988 (US Suicide Hotline)</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hospital Finder Modal -->
+    <div id="locationModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold gradient-text">
+                    <i class="fas fa-hospital mr-2"></i>Find Nearby Hospitals
+                </h2>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+
+            
+            <div class="mb-6">
+                <button id="useCurrentLocation" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition flex items-center justify-center">
+                    <i class="fas fa-location-arrow mr-2"></i>Use Current Location
+                </button>
+            </div>
+            
+            
+            
+            <div id="errorMessage" class="text-red-500 text-center mt-4 hidden"></div>
+            
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <p class="text-sm text-gray-500 text-center">
+                    <i class="fas fa-shield-alt mr-1"></i> Your location data is secure and encrypted
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Modal -->
+    <div id="emergencyModal" class="modal">
+        <div class="modal-content">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-red-600 mb-2">EMERGENCY ALERT</h2>
+                <p class="text-gray-700 mb-6">You are about to trigger an emergency response. Please confirm.</p>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-1">Emergency Services</p>
+                        <p class="font-bold">108 </p>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-1">Your Location</p>
+                        <p class="font-bold" id="emergencyLocation">Detecting...</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col space-y-3">
+                    <button id="confirmEmergency" class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition flex items-center justify-center pulse-animation">
+                        <i class="fas fa-phone-alt mr-2"></i> CALL EMERGENCY SERVICES
+                    </button>
+                    <button id="cancelEmergency" class="w-full bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <img src="https://via.placeholder.com/50" class="h-10 w-10 mr-3 rounded-full" alt="Logo">
+                        <h3 class="text-xl font-bold gradient-text">MediRapid</h3>
+                    </div>
+                    <p class="text-gray-400">AI-powered emergency medical response system saving lives through technology.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#emergency" class="text-gray-400 hover:text-white transition">Emergency</a></li>
+                        <li><a href="#services" class="text-gray-400 hover:text-white transition">Services</a></li>
+                        <li><a href="#ai-assistant" class="text-gray-400 hover:text-white transition">AI Assistant</a></li>
+                        <li><a href="firstaid.html" class="text-gray-400 hover:text-white transition">First Aid Guide</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-gray-400 hover:text-white transition">
+                            <i class="fas fa-envelope mr-3"></i> contact@medirapid.com
+                        </li>
+                        <li class="flex items-center text-gray-400 hover:text-white transition">
+                            <i class="fas fa-phone mr-3"></i> (555) 123-4567
+                        </li>
+                        <li class="flex items-center text-gray-400 hover:text-white transition">
+                            <i class="fas fa-map-marker-alt mr-3"></i> San Francisco, CA
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white text-xl transition">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white text-xl transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white text-xl transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white text-xl transition">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
+                <p>© 2023 MediRapid Technologies. All rights reserved. Patent pending.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKbgALiFQvn2MBI5tTOzJM-pB3Plax9Xw&libraries=places"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Typing animation for hero section
+            const typed = new Typed('#typed', {
+                strings: [
+                    "Emergency Medical Response",
+                    "AI-Powered Hospital Finder",
+                    "Instant Medical Assistance",
+                    "Life-Saving Technology"
+                ],
+                typeSpeed: 50,
+                backSpeed: 30,
+                loop: true,
+                showCursor: true,
+                cursorChar: '|',
+                smartBackspace: true
+            });
+
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Modal functionality
+            const findHospitalsBtn = document.getElementById('findHospitalsBtn');
+            const locationModal = document.getElementById('locationModal');
+            const closeModal = document.getElementById('closeModal');
+            const useCurrentLocation = document.getElementById('useCurrentLocation');
+            const searchLocation = document.getElementById('searchLocation');
+            const errorMessage = document.getElementById('errorMessage');
+            const emergencyTriggers = document.querySelectorAll('[id^="emergencyTrigger"]');
+            const emergencyModal = document.getElementById('emergencyModal');
+            const confirmEmergency = document.getElementById('confirmEmergency');
+            const cancelEmergency = document.getElementById('cancelEmergency');
+            const emergencyLocation = document.getElementById('emergencyLocation');
+            const aiAssistantBtn = document.getElementById('aiAssistantBtn');
+            const quickPromptBtns = document.querySelectorAll('.quick-prompt-btn');
+            const hospitalTypeBtns = document.querySelectorAll('.hospital-type-btn');
+
+            // Show hospital finder modal
+            findHospitalsBtn.addEventListener('click', () => {
+                locationModal.style.display = 'block';
+            });
+
+            // Close modal
+            closeModal.addEventListener('click', () => {
+                locationModal.style.display = 'none';
+                errorMessage.classList.add('hidden');
+            });
+
+            // Close when clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target === locationModal) {
+                    locationModal.style.display = 'none';
+                    errorMessage.classList.add('hidden');
+                }
+                if (event.target === emergencyModal) {
+emergencyModal.style.display = 'none';
+}
+});
+        // In the useCurrentLocation click handler:
+        useCurrentLocation.addEventListener('click', () => {
+            if ("geolocation" in navigator) {
+                errorMessage.classList.add('hidden');
+                useCurrentLocation.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Locating...';
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+                        // Redirect to hospitals.html with coordinates
+                        window.location.href = `hospitals.html?lat=${latitude}&lon=${longitude}`;
+                    },
+                    (error) => {
+                        showLocationError(error);
+                        useCurrentLocation.innerHTML = '<i class="fas fa-location-arrow mr-2"></i>Use Current Location';
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            } else {
+                showLocationError("Geolocation not supported");
+            }
+        });
+
+        // Search by entered location
+        searchLocation.addEventListener('click', () => {
+            const location = document.getElementById('locationInput').value.trim();
+            
+            if (location) {
+                errorMessage.classList.add('hidden');
+                // In a real app, you would geocode the address and redirect
+                // For demo, we'll just show a success message
+                searchLocation.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                setTimeout(() => {
+                    locationModal.style.display = 'none';
+                    searchLocation.innerHTML = '<i class="fas fa-search"></i>';
+                    // Simulate loading hospitals for demo
+                    simulateHospitalSearch(37.7749, -122.4194); // Default to SF coordinates for demo
+                }, 1500);
+            } else {
+                errorMessage.textContent = "Please enter a location.";
+                errorMessage.classList.remove('hidden');
+            }
+        });
+
+        // Hospital type buttons
+        hospitalTypeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const specialty = this.getAttribute('data-specialty');
+                // Visual feedback
+                this.classList.add('glow');
+                setTimeout(() => {
+                    this.classList.remove('glow');
+                }, 300);
+                
+                // In a real app, you would filter by specialty
+                // For demo, we'll just show a message
+                errorMessage.textContent = `Searching for ${specialty} hospitals...`;
+                errorMessage.classList.remove('hidden');
+                errorMessage.classList.remove('text-red-500');
+                errorMessage.classList.add('text-indigo-600');
+                
+                setTimeout(() => {
+                    locationModal.style.display = 'none';
+                    errorMessage.classList.add('hidden');
+                    // Simulate loading hospitals
+                    simulateHospitalSearch(37.7749, -122.4194);
+                }, 1500);
+            });
+        });
+
+        // Emergency modal triggers
+        emergencyTriggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                emergencyModal.style.display = 'block';
+                
+                // Try to get location for emergency
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            emergencyLocation.textContent = 
+                                `${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`;
+                        },
+                        (error) => {
+                            emergencyLocation.textContent = "Location unavailable";
+                        }
+                    );
+                } else {
+                    emergencyLocation.textContent = "Location services unavailable";
+                }
+            });
+        });
+
+        // Confirm emergency
+        confirmEmergency.addEventListener('click', () => {
+            // In a real app, this would trigger emergency protocols
+            // For demo, we'll show a confirmation
+            alert("EMERGENCY ALERT: Help is on the way! Stay on the line for further instructions.");
+            emergencyModal.style.display = 'none';
+        });
+
+        // Cancel emergency
+        cancelEmergency.addEventListener('click', () => {
+            emergencyModal.style.display = 'none';
+        });
+
+        // AI Assistant functionality
+        aiAssistantBtn.addEventListener('click', () => {
+            // Scroll to AI assistant section
+            document.getElementById('ai-assistant').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Chatbot functionality
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const quickReplies = document.getElementById('quick-replies');
+
+        // Initial bot message
+        setTimeout(() => {
+            addBotMessage("Hello! I'm MediBot, your AI medical assistant. I can help with symptom assessment, first aid guidance, and finding medical facilities. How can I assist you today?");
+            showQuickReplies([
+                "I'm not feeling well",
+                "Find a doctor near me",
+                "First aid information",
+                "Medication questions"
+            ]);
+        }, 500);
+
+        // Send message when button is clicked
+        sendButton.addEventListener('click', sendMessage);
+
+        // Send message when Enter key is pressed
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message) {
+                addUserMessage(message);
+                userInput.value = '';
+                respondToUser(message);
+            }
+        }
+
+        function addUserMessage(text) {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'message-container user-message-container';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'user-avatar';
+            avatar.innerHTML = '<i class="fas fa-user"></i>';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user-message';
+            messageDiv.textContent = text;
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = getCurrentTime();
+            
+            messageDiv.appendChild(timeDiv);
+            messageContainer.appendChild(messageDiv);
+            messageContainer.appendChild(avatar);
+            chatMessages.appendChild(messageContainer);
+            scrollToBottom();
+        }
+
+        function addBotMessage(text) {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'message-container bot-message-container';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'chatbot-avatar';
+            avatar.innerHTML = '<i class="fas fa-robot"></i>';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot-message';
+            messageDiv.innerHTML = text; // Using innerHTML to allow for formatting
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = getCurrentTime();
+            
+            messageDiv.appendChild(timeDiv);
+            messageContainer.appendChild(avatar);
+            messageContainer.appendChild(messageDiv);
+            chatMessages.appendChild(messageContainer);
+            scrollToBottom();
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            scrollToBottom();
+            return typingDiv;
+        }
+
+        function hideTypingIndicator() {
+            const typingDiv = document.getElementById('typing-indicator');
+            if (typingDiv) {
+                typingDiv.remove();
+            }
+        }
+
+        function showQuickReplies(replies) {
+            quickReplies.innerHTML = '';
+            replies.forEach(reply => {
+                const button = document.createElement('div');
+                button.className = 'quick-reply';
+                button.textContent = reply;
+                button.addEventListener('click', function() {
+                    addUserMessage(reply);
+                    respondToUser(reply);
+                });
+                quickReplies.appendChild(button);
+            });
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function respondToUser(message) {
+            const typingIndicator = showTypingIndicator();
+            
+            // Simulate bot thinking time
+            setTimeout(() => {
+                hideTypingIndicator();
+                
+                const lowerMessage = message.toLowerCase();
+                
+                if (lowerMessage.includes("not feeling well") || lowerMessage.includes("symptom") || lowerMessage.includes("feel sick")) {
+                    handleSymptoms();
+                } 
+                else if (lowerMessage.includes("doctor") || lowerMessage.includes("find") || lowerMessage.includes("near me")) {
+                    addBotMessage("I can help you find healthcare providers in your area. Please share your location or zip code.");
+                    showQuickReplies(["Enter my location", "Never mind"]);
+                }
+                else if (lowerMessage.includes("first aid") || lowerMessage.includes("emergency")) {
+                    addBotMessage("For first aid information, please specify the situation:<br><br>" +
+                        "<div class='symptom-options'>" +
+                        "<div class='symptom-option' onclick=\"addUserMessage('Burns')\">Burns</div>" +
+                        "<div class='symptom-option' onclick=\"addUserMessage('Cuts')\">Cuts</div>" +
+                        "<div class='symptom-option' onclick=\"addUserMessage('Choking')\">Choking</div>" +
+                        "<div class='symptom-option' onclick=\"addUserMessage('CPR')\">CPR</div>" +
+                        "<div class='symptom-option' onclick=\"addUserMessage('Allergic reaction')\">Allergic reaction</div>" +
+                        "</div>");
+                }
+                else if (lowerMessage.includes("medication") || lowerMessage.includes("medicine") || lowerMessage.includes("pill")) {
+                    addBotMessage("I can provide general information about medications. Please tell me the name of the medication you're asking about.");
+                }
+                else if (lowerMessage.includes("thank") || lowerMessage.includes("thanks")) {
+                    addBotMessage("You're welcome! Is there anything else I can help you with?");
+                    showQuickReplies(["Yes, another question", "No, that's all"]);
+                }
+                else if (lowerMessage.includes("hello") || lowerMessage.includes("hi") || lowerMessage.includes("hey")) {
+                    addBotMessage("Hello there! How can I assist you with your health questions today?");
+                    showQuickReplies([
+                        "I'm not feeling well",
+                        "Find a doctor near me",
+                        "First aid information",
+                        "Medication questions"
+                    ]);
+                }
+                else {
+                    addBotMessage("I'm sorry, I didn't understand that. Could you please rephrase or choose from these options?");
+                    showQuickReplies([
+                        "I'm not feeling well",
+                        "Find a doctor near me",
+                        "First aid information",
+                        "Medication questions"
+                    ]);
+                }
+            }, 1000 + Math.random() * 2000); // Random delay between 1-3 seconds
+        }
+
+        function handleSymptoms() {
+            addBotMessage("I'm sorry to hear you're not feeling well. Could you describe your symptoms?<br><br>" +
+                "<div class='symptom-options'>" +
+                "<div class='symptom-option' onclick=\"addUserMessage('Fever')\">Fever</div>" +
+                "<div class='symptom-option' onclick=\"addUserMessage('Cough')\">Cough</div>" +
+                "<div class='symptom-option' onclick=\"addUserMessage('Headache')\">Headache</div>" +
+                "<div class='symptom-option' onclick=\"addUserMessage('Sore throat')\">Sore throat</div>" +
+                "<div class='symptom-option' onclick=\"addUserMessage('Stomach pain')\">Stomach pain</div>" +
+                "<div class='symptom-option' onclick=\"addUserMessage('Fatigue')\">Fatigue</div>" +
+                "</div>");
+            
+            // Listen for symptom selection
+            const symptomListener = function(e) {
+                if (e.target.classList.contains('symptom-option')) {
+                    const symptom = e.target.textContent;
+                    addUserMessage(symptom);
+                    provideSymptomAdvice(symptom);
+                    document.removeEventListener('click', symptomListener);
+                }
+            };
+            
+            document.addEventListener('click', symptomListener);
+        }
+
+        function provideSymptomAdvice(symptom) {
+            const typingIndicator = showTypingIndicator();
+            
+            setTimeout(() => {
+                hideTypingIndicator();
+                
+                const advice = getAdviceForSymptom(symptom);
+                addBotMessage(advice);
+                addBotMessage("Would you like to check another symptom or find a doctor near you?");
+                
+                showQuickReplies([
+                    "Check another symptom",
+                    "Find a doctor",
+                    "No, that's all"
+                ]);
+            }, 1500);
+        }
+
+        function getAdviceForSymptom(symptom) {
+            const lowerSymptom = symptom.toLowerCase();
+            const now = new Date();
+            const hours = now.getHours();
+            const timeOfDay = hours < 12 ? "morning" : hours < 18 ? "afternoon" : "evening";
+            
+            let advice = `For <strong>${symptom}</strong>, here's what I recommend:<br><br>`;
+            
+            if (lowerSymptom.includes("fever")) {
+                advice += "• Rest and drink plenty of fluids<br>" +
+                          "• Take acetaminophen or ibuprofen for fever reduction<br>" +
+                          "• Monitor your temperature regularly<br>" +
+                          "• Seek medical attention if fever is above 103°F (39.4°C) or lasts more than 3 days";
+            }
+            else if (lowerSymptom.includes("cough")) {
+                advice += "• Stay hydrated with warm liquids<br>" +
+                          "• Consider honey (for adults and children over 1 year)<br>" +
+                          "• Use a humidifier to moisten the air<br>" +
+                          "• See a doctor if cough persists more than 3 weeks or is accompanied by difficulty breathing";
+            }
+            else if (lowerSymptom.includes("headache")) {
+                advice += "• Rest in a quiet, dark room<br>" +
+                          "• Apply a cool compress to your forehead<br>" +
+                          "• Take over-the-counter pain relievers as directed<br>" +
+                          "• Seek immediate care for sudden, severe headache or if accompanied by confusion, fever, or stiff neck";
+            }
+            else if (lowerSymptom.includes("sore throat")) {
+                advice += "• Gargle with warm salt water<br>" +
+                          "• Drink warm liquids like tea with honey<br>" +
+                          "• Use throat lozenges (for adults and older children)<br>" +
+                          "• See a doctor if symptoms last more than a week or are severe";
+            }
+            else if (lowerSymptom.includes("stomach pain")) {
+                advice += "• Stick to bland foods like toast or rice<br>" +
+                          "• Avoid dairy, fatty, or spicy foods<br>" +
+                          "• Stay hydrated with small sips of water<br>" +
+                          "• Seek medical attention for severe pain, vomiting blood, or black stools";
+            }
+            else if (lowerSymptom.includes("fatigue")) {
+                advice += "• Ensure you're getting 7-9 hours of quality sleep<br>" +
+                          "• Stay hydrated and eat balanced meals<br>" +
+                          "• Consider mild exercise to boost energy<br>" +
+                          "• Consult a doctor if fatigue persists more than 2 weeks or affects daily life";
+            }
+            else {
+                advice = `For ${symptom}, I recommend monitoring your symptoms and consulting with a healthcare provider if they persist or worsen.`;
+            }
+            
+            advice += `<br><br><em>Good ${timeOfDay}! I hope you feel better soon.</em>`;
+            return advice;
+        }
+
+        function showLocationError(error) {
+            let message = '';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    message = "Location access was denied. Please enable location services.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message = "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    message = "The request to get location timed out.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    message = "An unknown error occurred.";
+                    break;
+                default:
+                    message = error;
+            }
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        function simulateHospitalSearch(lat, lng) {
+            // In a real app, this would show actual hospitals from an API
+            // For demo, we'll show a loading animation and then scroll to services
+            const loadingSection = document.createElement('div');
+            loadingSection.className = 'text-center py-16';
+            loadingSection.innerHTML = `
+                <div class="mx-auto h-16 w-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-spinner fa-spin text-indigo-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Finding nearby hospitals</h3>
+                <p class="text-gray-600">Our AI is analyzing the best medical facilities for your location</p>
+                <div class="mt-6 w-full bg-gray-200 rounded-full h-2.5 max-w-md mx-auto">
+                    <div class="bg-indigo-600 h-2.5 rounded-full animate-pulse" style="width: 45%"></div>
+                </div>
+            `;
+            
+            // Insert after hero section
+            const hero = document.querySelector('header');
+            hero.parentNode.insertBefore(loadingSection, hero.nextSibling);
+            
+            // After delay, scroll to services
+            setTimeout(() => {
+                loadingSection.remove();
+                document.getElementById('services').scrollIntoView({ behavior: 'smooth' });
+            }, 2500);
+        }
+
+        // Smooth scroll for all anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Close mobile menu if open
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // Animate progress bar when scrolling
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.body.offsetHeight;
+            const winHeight = window.innerHeight;
+            const scrollPercent = scrollTop / (docHeight - winHeight);
+            const scrollPercentRounded = Math.round(scrollPercent * 100);
+            
+            // Add/remove shadow from navbar based on scroll
+            const nav = document.querySelector('nav');
+            if (scrollTop > 10) {
+                nav.classList.add('shadow-lg');
+            } else {
+                nav.classList.remove('shadow-lg');
+            }
+        });
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section, .feature-card').forEach(section => {
+            observer.observe(section);
+        });
+    });
+
+    // Initialize Google Maps when needed
+    function initMap(lat, lng) {
+        return new google.maps.Map(document.getElementById('map'), {
+            center: { lat: lat, lng: lng },
+            zoom: 14,
+            styles: [
+                {
+                    "featureType": "poi.medical",
+                    "elementType": "labels.icon",
+                    "stylers": [
+                        { "visibility": "on" },
+                        { "color": "#4f46e5" }
+                    ]
+                },
+                {
+                    "featureType": "poi.hospital",
+                    "elementType": "geometry",
+                    "stylers": [
+                        { "color": "#f8fafc" }
+                    ]
+                }
+            ]
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "che110": "html",
+        "iostream": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

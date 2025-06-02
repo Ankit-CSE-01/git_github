@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <style>
+        body{
+            background-color: rgb(14, 253, 253);
+            text-align: center;
+            font-size: x-large;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+        <form>
+            <label>Name: </label>
+            <input type="text" name="name" placeholder="Enter Your Name"><br>
+            <label>Email: </label>
+            <input type="email" name="email" placeholder="Enter Your Email"><br>
+            <label>Age: </label>
+            <input type="number" name="age" placeholder="Enter Your Age"><br>
+            <input type="button" name="submit" value="submit">
+        </form>
+        
+    <script>
+        let a = document.getElementsByName("name");
+        let nm = a.getElementByName("name");
+        console.log(nm);
+
+        let b = document.getElementsByName("email");
+        let el = b.getElementByName("email");
+        console.log(el);
+
+        let c = document.getElementsByName("age");
+        let ag = c.getElementByName("age");
+        console.log(ag);
+
+        document.querySelectorAll("submit");
+        console.log(submit);
+        
+    </script>
+</body>
+</html>

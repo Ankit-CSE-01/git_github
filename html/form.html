@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src=""></script>
+</head>
+<body>
+    <h1>Form</h1>
+    <input id="input" type="text"> <br><br>
+    <button id="b1">Submit</button> <br><br>
+    <button id="b2">Reset</button> <br><br>
+    <script>
+        $(document).ready(function() {
+            $("#b1").click(function() {
+                var inputValue = $("#input").val();
+                alert("You entered: " + inputValue);
+            });
+            $("#b2").click(function() {
+                $("#input").val("");
+            });
+        });
+</body>
+</html>

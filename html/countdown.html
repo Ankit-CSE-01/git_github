@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Countdown Timer</title>
+  <style>
+    body {
+      background-color: #e6b3ff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    h1 {
+      color: #333366;
+      font-size: 36px;
+      margin-bottom: 20px;
+      text-shadow: 1--px 1px 2px white;
+    }
+
+    form {
+      background-color: #f0d9ff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    input[type="number"] {
+      padding: 10px;
+      font-size: 18px;
+      width: 100px;
+      margin-right: 10px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #3366cc;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    #display {
+      margin-top: 30px;
+      font-size: 36px;
+      font-weight: bold;
+      color: #333366;
+    }
+
+    #error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Countdown Timer</h1>
+
+  <form id="timerForm">
+    <input type="number" id="secondsInput" placeholder="Seconds (max 180)" max="180" required>
+    <button type="submit">Start Countdown</button>
+    <div id="error"></div>
+  </form>
+
+  <div id="display">00:00</div>
+
+  <script>
+    const form = document.getElementById('timerForm');
+    const display = document.getElementById('display');
+    const error = document.getElementById('error');
+    let interval;
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault(); // Stop form from submitting
+      const seconds = parseInt(document.getElementById('secondsInput').value);
+
+      if (isNaN(seconds) || seconds <= 0) {
+        error.textContent = 'Please enter a valid number of seconds.';
+        return;
+      }
+
+      if (seconds > 180) {
+        error.textContent = 'Maximum time is 180 seconds (3 minutes).';
+        return;
+      }
+
+      error.textContent = ''; // Clear any previous error
+      clearInterval(interval); // Clear any existing countdown
+
+      let remaining = seconds;
+
+      function updateDisplay() {
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        display.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+
+      updateDisplay();
+
+      interval = setInterval(() => {
+        remaining--;
+        updateDisplay();
+
+        if (remaining <= 0) {
+          clearInterval(interval);
+        }
+      }, 1000);
+    });
+  </script>
+
+</body>
+</html>
